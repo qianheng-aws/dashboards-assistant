@@ -19,6 +19,7 @@ import { NotebookNameModal } from './notebook/notebook_name_modal';
 import { ChatExperimentalBadge } from './chat_experimental_badge';
 import { useCore } from '../contexts/core_context';
 import { EditConversationNameModal } from './edit_conversation_name_modal';
+import { getConfigSchema } from '../services';
 
 export const ChatWindowHeaderTitle = React.memo(() => {
   const chatContext = useChatContext();
@@ -29,7 +30,11 @@ export const ChatWindowHeaderTitle = React.memo(() => {
   const [isSaveNotebookModalOpen, setSaveNotebookModalOpen] = useState(false);
   const { chatState } = useChatState();
   const { saveChat } = useSaveChat();
-  const displayTitle = chatContext.conversationId ? chatContext.title : 'OpenSearch Assistant';
+  const displayTitle = getConfigSchema().next.enabled
+    ? 'OpenSearch Alert Assistant'
+    : chatContext.conversationId
+    ? chatContext.title
+    : 'OpenSearch Assistant';
 
   const onButtonClick = useCallback(() => {
     setPopoverOpen((flag) => !flag);
@@ -121,25 +126,27 @@ export const ChatWindowHeaderTitle = React.memo(() => {
         <EuiFlexItem grow={false}>
           <ChatExperimentalBadge onClick={closePopover} />
         </EuiFlexItem>
-        <EuiFlexItem grow={false}>
-          <EuiPopover
-            id="conversationTitle"
-            button={
-              <EuiSmallButtonIcon
-                onClick={onButtonClick}
-                aria-label="toggle chat context menu"
-                color="text"
-                iconType="arrowDown"
-              />
-            }
-            isOpen={isPopoverOpen}
-            closePopover={closePopover}
-            panelPaddingSize="none"
-            anchorPosition="downCenter"
-          >
-            <EuiContextMenuPanel size="m" items={items} />
-          </EuiPopover>
-        </EuiFlexItem>
+        {!getConfigSchema().next.enabled && (
+          <EuiFlexItem grow={false}>
+            <EuiPopover
+              id="conversationTitle"
+              button={
+                <EuiSmallButtonIcon
+                  onClick={onButtonClick}
+                  aria-label="toggle chat context menu"
+                  color="text"
+                  iconType="arrowDown"
+                />
+              }
+              isOpen={isPopoverOpen}
+              closePopover={closePopover}
+              panelPaddingSize="none"
+              anchorPosition="downCenter"
+            >
+              <EuiContextMenuPanel size="m" items={items} />
+            </EuiPopover>
+          </EuiFlexItem>
+        )}
       </EuiFlexGroup>
       {isRenameModalOpen && (
         <EditConversationNameModal

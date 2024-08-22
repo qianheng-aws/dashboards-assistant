@@ -11,6 +11,7 @@ import { ChatWindowHeaderTitle } from '../components/chat_window_header_title';
 import chatIcon from '../assets/chat.svg';
 import { TAB_ID } from '../utils/constants';
 import { SidecarIconMenu } from '../components/sidecar_icon_menu';
+import { getConfigSchema } from '../services';
 
 export const ChatWindowHeader = React.memo(() => {
   const chatContext = useChatContext();
@@ -33,23 +34,27 @@ export const ChatWindowHeader = React.memo(() => {
             </EuiFlexItem>
           </EuiFlexGroup>
         </EuiFlexItem>
-        <EuiFlexItem grow={false}>
-          <EuiButtonIcon
-            aria-label="history"
-            iconType="clock"
-            size="xs"
-            color="text"
-            onClick={() => {
-              chatContext.setFlyoutComponent(undefined);
-              // Back to chat tab if history page already visible
-              chatContext.setSelectedTabId(
-                chatContext.selectedTabId === TAB_ID.HISTORY ? TAB_ID.CHAT : TAB_ID.HISTORY
-              );
-            }}
-            display={chatContext.selectedTabId === TAB_ID.HISTORY ? 'fill' : undefined}
-          />
-        </EuiFlexItem>
-        <SidecarIconMenu />
+        {!getConfigSchema().next.enabled && (
+          <>
+            <EuiFlexItem grow={false}>
+              <EuiButtonIcon
+                aria-label="history"
+                iconType="clock"
+                size="xs"
+                color="text"
+                onClick={() => {
+                  chatContext.setFlyoutComponent(undefined);
+                  // Back to chat tab if history page already visible
+                  chatContext.setSelectedTabId(
+                    chatContext.selectedTabId === TAB_ID.HISTORY ? TAB_ID.CHAT : TAB_ID.HISTORY
+                  );
+                }}
+                display={chatContext.selectedTabId === TAB_ID.HISTORY ? 'fill' : undefined}
+              />
+            </EuiFlexItem>
+            <SidecarIconMenu />
+          </>
+        )}
         <EuiFlexItem grow={false}>
           <EuiButtonIcon
             aria-label="close"

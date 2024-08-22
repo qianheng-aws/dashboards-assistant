@@ -11,7 +11,7 @@ import { useEffectOnce } from 'react-use';
 import { ApplicationStart, SIDECAR_DOCKED_MODE } from '../../../src/core/public';
 // TODO: Replace with getChrome().logos.Chat.url
 import chatIcon from './assets/chat.svg';
-import { getIncontextInsightRegistry } from './services';
+import { getConfigSchema, getIncontextInsightRegistry } from './services';
 import { ChatFlyout } from './chat_flyout';
 import { ChatContext, IChatContext } from './contexts/chat_context';
 import { SetContext } from './contexts/set_context';
@@ -217,45 +217,47 @@ export const HeaderChatButton = (props: HeaderChatButtonProps) => {
   return (
     <>
       <div className={classNames('llm-chat-header-icon-wrapper')}>
-        <EuiFieldText
-          aria-label="chat input"
-          inputRef={inputRef}
-          compressed
-          onFocus={() => setInputFocus(true)}
-          onBlur={() => setInputFocus(false)}
-          placeholder="Ask question"
-          onKeyPress={onKeyPress}
-          onKeyUp={onKeyUp}
-          prepend={
-            <EuiIcon
-              aria-label="toggle chat flyout icon"
-              type={chatIcon}
-              size="l"
-              onClick={() => setFlyoutVisible(!flyoutVisible)}
-            />
-          }
-          append={
-            <span className="llm-chat-header-shortcut">
-              {inputFocus ? (
-                <EuiBadge
-                  title="press enter to chat"
-                  className="llm-chat-header-shortcut-enter"
-                  color="hollow"
-                >
-                  ⏎
-                </EuiBadge>
-              ) : (
-                <EuiBadge
-                  title="press Ctrl + / to start typing"
-                  className="llm-chat-header-shortcut-cmd"
-                  color="hollow"
-                >
-                  Ctrl + /
-                </EuiBadge>
-              )}
-            </span>
-          }
-        />
+        {!getConfigSchema().next.enabled && (
+          <EuiFieldText
+            aria-label="chat input"
+            inputRef={inputRef}
+            compressed
+            onFocus={() => setInputFocus(true)}
+            onBlur={() => setInputFocus(false)}
+            placeholder="Ask question"
+            onKeyPress={onKeyPress}
+            onKeyUp={onKeyUp}
+            prepend={
+              <EuiIcon
+                aria-label="toggle chat flyout icon"
+                type={chatIcon}
+                size="l"
+                onClick={() => setFlyoutVisible(!flyoutVisible)}
+              />
+            }
+            append={
+              <span className="llm-chat-header-shortcut">
+                {inputFocus ? (
+                  <EuiBadge
+                    title="press enter to chat"
+                    className="llm-chat-header-shortcut-enter"
+                    color="hollow"
+                  >
+                    ⏎
+                  </EuiBadge>
+                ) : (
+                  <EuiBadge
+                    title="press Ctrl + / to start typing"
+                    className="llm-chat-header-shortcut-cmd"
+                    color="hollow"
+                  >
+                    Ctrl + /
+                  </EuiBadge>
+                )}
+              </span>
+            }
+          />
+        )}
         <ChatContext.Provider value={chatContextValue}>
           <ChatStateProvider>
             <SetContext assistantActions={props.assistantActions} />
